@@ -7,25 +7,33 @@
 {% endblock %}
 
 {% block title %}
-    測試
+          測試
 {% endblock %}
 
 {% block content %}
     <div class="d-flex">
         <nav class="nav flex-column">
-            <a class="nav-link active" href="#">Active</a>
-            <a class="nav-link" href="#">Link</a>
-            <a class="nav-link" href="#">Link</a>
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+            <a class="nav-link active" href="/">首頁</a>
+            <a class="nav-link" href="/">發燒照片</a>
+            <a class="nav-link" href="/">訂閱照片</a>
+{#            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
         </nav>
 
         <main class="d-flex">
-            <form action="" method="post" class="form">
+            <form action="" method="post" class="d-flex form">
                 {% csrf_token %}
-                {% bootstrap_form form %}
-                {% buttons %}
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                {% endbuttons %}
+
+                {% for img in photo %}
+                    <div class="p-2 flex-shrink-1 bd-highlight text-center">
+                        <img src="{{ img.photo_file }}">
+                        <div>{{ img.title }}</div>
+
+                    </div>
+                {% endfor %}
+
+                {#                {% buttons %}#}
+                {#                    <button type="submit" class="btn btn-primary">Submit</button>#}
+                {#                {% endbuttons %}#}
             </form>
         </main>
     </div>
