@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block title %}
-          測試
+          圖片分享
 {% endblock %}
 
 {% block content %}
@@ -22,12 +22,10 @@
         <main class="d-flex">
             <form action="" method="post" class="d-flex form">
                 {% csrf_token %}
-
-                {% for img in photo %}
+                {% for img in random_photo %}
                     <div class="p-2 flex-shrink-1 bd-highlight text-center">
-                        <img src="{{ img.photo_file }}">
+                        <a href="/post/{{ img.pk}}"><img src="/{{ img.photo_file }}"></a>
                         <div>{{ img.title }}</div>
-
                     </div>
                 {% endfor %}
 

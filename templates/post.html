@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    圖片分享
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex">
+        <div class="p-2 w-100 bd-highlight">
+             <img src="/{{ photo_path }}">
+        </div>
+
+        <div class="nav flex-column">
+            <p>其他圖片</p>
+            {% for img in all_photo %}
+                <div>
+                    <a href="/post/{{ img.pk}}"> <img src="/{{ img.photo_file }}"></a>
+
+                    <div class="nav flex-wrap-nowrap">
+                        <p>{{ img.title }}</p>
+                    </div>
+                </div>
+            {% endfor ㄌ%}
+        </div>
+    </div>
+{% endblock %}
