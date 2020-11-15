@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-{% load bootstrap4 %}
-{% load static %}
 
+{% load static %}
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/index.css' %}"
 {% endblock %}
@@ -12,15 +11,15 @@
 
 {% block content %}
     <div class="d-flex">
-        <nav class="nav flex-column">
+        <nav class="p-2 nav flex-column" style="width: 10%">
             <a class="nav-link active" href="/">首頁</a>
             <a class="nav-link" href="/">發燒照片</a>
             <a class="nav-link" href="/">訂閱照片</a>
 {#            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
         </nav>
 
-        <main class="d-flex">
-            <form action="" method="post" class="d-flex form">
+        <main>
+            <form action="" method="post" class="d-flex flex-wrap">
                 {% csrf_token %}
                 {% for img in random_photo %}
                     <div class="p-2 flex-shrink-1 bd-highlight text-center">
@@ -28,10 +27,6 @@
                         <div>{{ img.title }}</div>
                     </div>
                 {% endfor %}
-
-                {#                {% buttons %}#}
-                {#                    <button type="submit" class="btn btn-primary">Submit</button>#}
-                {#                {% endbuttons %}#}
             </form>
         </main>
     </div>

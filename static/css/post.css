@@ -1,0 +1,24 @@
+.center {
+    align-self: center;
+    width:50%;
+    height:50% ;
+}
+.left_width {
+    width: 150px;
+}
+.right_width {
+    padding:50px 20px 0px 0px;
+    width: 450px;
+}
+
+.next_img_padding {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.next_img_self_padding {
+    width: 150px;
+    margin-right: 10px;
+}
+/*mb-10 d-flex align-items-center*/

@@ -1,5 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-between">
-    <a class="navbar-brand" href="/">Navbar</a>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-between sticky-top">
+    <a class="navbar-brand" href="/">Photober</a>
 
     <form class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -13,16 +14,18 @@
 
         {% if user_name %}
             <li class="nav-item">
-                <a class="nav-link" href="/logout/">登出</a>
+{#                <a class="nav-link" href="/logout/">登出</a>#}
+                <a class="nav-link" href="/logout/?next={{request.path}}">登出</a>
             </li>
         {% else %}
             <li class="nav-item">
-                <a class="nav-link" href="/login/">登入</a>
+{#                <a class="nav-link" href="/login/">登入</a>#}
+                <a class="nav-link" href="/login/?next={{request.path}}">登入</a>
             </li>
         {% endif %}
-
-        <li class="nav-item">
-            <a class="nav-link" href="/register/">註冊</a>
-        </li>
+{##}
+{#        <li class="nav-item">#}
+{#            <a class="nav-link" href="/register/">註冊</a>#}
+{#        </li>#}
     </ul>
 </nav>

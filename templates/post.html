@@ -1,26 +1,40 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/post.css' %}"
+{% endblock %}
+
 {% block title %}
-    圖片分享
+          圖片分享
 {% endblock %}
 
 {% block content %}
-    <div class="d-flex">
+    <div class="d-flex bd-highlight">
+        <div class="left_width"></div>
         <div class="p-2 w-100 bd-highlight">
-             <img src="/{{ photo_path }}">
+            <div class="d-flex flex-column">
+                <img src="/{{ photo_path }}" class="center">
+                {{ photo_title }}
+            </div>
+
         </div>
-
-        <div class="nav flex-column">
-            <p>其他圖片</p>
-            {% for img in all_photo %}
-                <div>
-                    <a href="/post/{{ img.pk}}"> <img src="/{{ img.photo_file }}"></a>
-
-                    <div class="nav flex-wrap-nowrap">
-                        <p>{{ img.title }}</p>
+        <div class="right_width">
+            <div class="nav flex-column">
+                <p>其他圖片</p>
+                {% for img in all_photo %}
+                    {#                <div class="nav flex-column">#}
+                    <div class="next_img_padding">
+                        <a href="/post/{{ img.pk }}"> <img src="/{{ img.photo_file }}" class="next_img_self_padding"> {{ img.title }}</a>
+{#                        <p>{{ img.title }}</p>#}
                     </div>
-                </div>
-            {% endfor ㄌ%}
+                    {#                </div>#}
+
+                {% endfor %}
+            </div>
         </div>
+
+
     </div>
 {% endblock %}

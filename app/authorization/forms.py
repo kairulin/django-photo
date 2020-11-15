@@ -15,7 +15,7 @@ class LoginForm(forms.Form):
     )
 
 
-class RegisterForm(UserCreationForm):
+class RegisterForm(UserCreationForm):  #客製化UserCreationForm
     user_name = forms.CharField(
         label="帳號",
         max_length=150,
