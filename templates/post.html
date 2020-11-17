@@ -13,28 +13,54 @@
 {% block content %}
     <div class="d-flex bd-highlight">
         <div class="left_width"></div>
+        {# 左邊留空白  #}
+
         <div class="p-2 w-100 bd-highlight">
             <div class="d-flex flex-column">
                 <img src="/{{ photo_path }}" class="center">
-                {{ photo_title }}
+                <p>{{ photo_title }}</p>
+                <div>
+                    <form action="" method="GET">
+                        <a href="/photo_like/?next={{ request.path }}">
+                            <input type="button" value="喜歡:{{ photo_likes }}">
+{#                            <button type='submit' name="photo_likes={{ request.path }}" >喜歡:{{ photo_likes }}</button>#}
+                        </a>
+{#                    <input type="button" name="likes" value="喜歡:{{ photo_likes }}">#}
+                        <button type='submit' name="photo_hates">討厭:{{ photo_hates }}</button>
+{#                    <input type="button" name="hates" value="討厭:{{ photo_hates }}">#}
+                    </form>
+                </div>
             </div>
 
+            <form action="" method="GET">
+                {% csrf_token %}
+                <table>
+                    {% if username %}
+                        <textarea placeholder="使用以下身分發布留言：{{ username }}" name="content" rows="2" cols="48"></textarea>
+                    {% else %}
+                        <a href="/login/?next={{ request.path }}">
+                            <textarea readonly="readonly" placeholder="登入留言" name="content" rows="2" cols="48"></textarea>
+                        </a>
+                    {% endif %}
+                </table>
+                <input type="reset" value="取消">
+                <input name="ok" type="submit" value="留言">
+            </form>
         </div>
+
         <div class="right_width">
             <div class="nav flex-column">
                 <p>其他圖片</p>
-                {% for img in all_photo %}
-                    {#                <div class="nav flex-column">#}
+                {% for img in photo_exclude %}
                     <div class="next_img_padding">
-                        <a href="/post/{{ img.pk }}"> <img src="/{{ img.photo_file }}" class="next_img_self_padding"> {{ img.title }}</a>
-{#                        <p>{{ img.title }}</p>#}
+                        <a href="/post/{{ img.pk }}">
+                            <img src="/{{ img.photo_file }}" class="next_img_self_padding">
+                            {# img 是所有的 photo_exclude。 photo_file 是其他圖片 #}
+                            {{ img.title }}
+                        </a>
                     </div>
-                    {#                </div>#}
-
                 {% endfor %}
             </div>
         </div>
-
-
     </div>
 {% endblock %}

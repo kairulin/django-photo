@@ -15,7 +15,7 @@
             <a class="nav-link active" href="/">首頁</a>
             <a class="nav-link" href="/">發燒照片</a>
             <a class="nav-link" href="/">訂閱照片</a>
-{#            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
+            {#            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
         </nav>
 
         <main>
@@ -23,7 +23,7 @@
                 {% csrf_token %}
                 {% for img in random_photo %}
                     <div class="p-2 flex-shrink-1 bd-highlight text-center">
-                        <a href="/post/{{ img.pk}}"><img src="/{{ img.photo_file }}"></a>
+                        <a href="/post/{{ img.pk }}"><img src="/{{ img.photo_file }}"></a>
                         <div>{{ img.title }}</div>
                     </div>
                 {% endfor %}
