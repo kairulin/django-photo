@@ -24,6 +24,7 @@ def index(request):  # 首頁
 
     return render(request, 'index.html', result)
 
+
 def post(request, pk):  # 圖片頁面
     username = user_authenticated(request)  # 判斷是否有登入
     all_photo = models.Photo.objects.all()  # 所有的圖片
@@ -102,11 +103,49 @@ def user_authenticated(request):  # 判斷使用者是否有登入
         username = None
     return username
 
+
 def click_likes(request):
-    photo_pk = (request.GET['next']).strip('/').split('/')[1]
-    wanna_photo = models.Photo.objects.get(pk=photo_pk)
-    wanna_photo.likes()
+    get_list = get_photo(request)
+
+    check_user_click(get_list[0], get_list[1], get_list[2])
+
     return redirect(request.GET['next'])
+
+
+def click_hates(request):
+    get_list = get_photo(request)
+
+    check_user_click(get_list[0], get_list[1], get_list[2])
+
+    return redirect(request.GET['next'])
+
+def get_photo(request): #得到使用者、網址PK、使用者對這張圖片的感受 並放進list裡面
+    username = user_authenticated(request)
+
+    url_str = str(request)
+    split_photo = url_str.strip('/').split('/')  # 分割網址
+    photo_pk = split_photo[4] #抓這張圖的pk
+    user_feel = split_photo[1] #使用者喜歡or不喜歡
+
+    wanna_photo = models.Photo.objects.get(pk=photo_pk)
+
+    get_list = [username, wanna_photo, user_feel]
+    return get_list
+
+
+def check_user_click(username, model, user_feel):  # 檢查這個使用者是否按過讚了
+    try:
+        if model.likes_hates_user.filter(username=username):
+            print('你已經按過了')
+        else:
+            if user_feel == 'photo_likes':
+                model.likes()
+            elif user_feel == 'photo_hates':
+                model.hates()
+            model.likes_hates_user.add(User.objects.get(username=username))
+    except Exception as e:
+        print(e)
+    return 0
 
 # 下面是測試用
 # def photo_message(request):  # 對圖片的留言

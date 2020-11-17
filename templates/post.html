@@ -21,13 +21,12 @@
                 <p>{{ photo_title }}</p>
                 <div>
                     <form action="" method="GET">
-                        <a href="/photo_like/?next={{ request.path }}">
+                        <a href="/photo_likes/?next={{ request.path }}">
                             <input type="button" value="喜歡:{{ photo_likes }}">
-{#                            <button type='submit' name="photo_likes={{ request.path }}" >喜歡:{{ photo_likes }}</button>#}
                         </a>
-{#                    <input type="button" name="likes" value="喜歡:{{ photo_likes }}">#}
-                        <button type='submit' name="photo_hates">討厭:{{ photo_hates }}</button>
-{#                    <input type="button" name="hates" value="討厭:{{ photo_hates }}">#}
+                        <a href="/photo_hates/?next={{ request.path }}">
+                            <input type="button" value="討厭:{{ photo_hates }}">
+                        </a>
                     </form>
                 </div>
             </div>
