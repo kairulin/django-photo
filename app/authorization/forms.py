@@ -36,11 +36,3 @@ class RegisterForm(UserCreationForm):  #客製化UserCreationForm
     class Meta:
         model = User
         fields = ('username', 'password1', 'password2')
-
-class PhotoMessageForm(forms.ModelForm):
-
-    class Meta:
-        model = models.PhotoMessage
-        # fields = ['photo', 'message_user', 'message_content', 'message_likes', 'message_hates']
-        fields = ['photo','message_user','message_content']
-

@@ -1,24 +1,10 @@
-.center {
-    align-self: center;
-    width:50%;
-    height:50% ;
+.nav-right{
+    justify-content: flex-end;
 }
-.left_width {
-    width: 150px;
-}
-.right_width {
-    padding:50px 20px 0px 0px;
-    width: 450px;
+.nav-right li{
+    margin-left: 0.5rem;
 }
 
-.next_img_padding {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+body{
+    background-color: #9C1A1C;
 }
-
-.next_img_self_padding {
-    width: 150px;
-    margin-right: 10px;
-}
-/*mb-10 d-flex align-items-center*/

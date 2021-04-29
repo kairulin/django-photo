@@ -5,15 +5,76 @@
 {% endblock %}
 
 {% block content %}
-    {% for t in message_all %}
-        {{ t }}
+    {% for photo_file in all_photo %}
+        <div class="container-fluid">
+            <div class="row pt-4">
+                {% if  photo_file.is_current == True %}
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <img alt="Bootstrap Image Preview"
+                                             src="https://www.layoutit.com/img/sports-q-c-140-140-3.jpg"/>
+                                    </div>
+                                </div>
+                                <div class="row pt-2">
+                                    <div class="col-md-12">
+                                        <span class="badge badge-default">Label</span>
+                                    </div>
+                                </div>
+                                <div class="row pt-2">
+                                    <div class="col-md-6">
+                                        <span class="badge badge-default">Label</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="nav nav-pills">
+                                            <li class="nav-item">
+                                                <a class="nav-link btn btn-primary" href="#">Home <span
+                                                        class="badge badge-light">42</span></a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#">More <span
+                                                        class="badge badge-secondary">16</span></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <h5 class="card-header">
+                                        Card title
+                                    </h5>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Card content
+                                        </p>
+                                    </div>
+                                    <div class="card-footer">
+                                        Card footer
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-md-4">
+                        <span class="badge badge-default">Label</span>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img alt="Bootstrap Image Preview"
+                                     src="https://www.layoutit.com/img/sports-q-c-140-140-3.jpg"/>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="badge badge-default">Label</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     {% endfor %}
-    <form name="message_post" action="" method="POST">
-        {% csrf_token %}
-        <table>
-            {{ message_form.as_table }}
-        </table>
-
-        <input type="submit" value="確認">
-    </form>
 {% endblock %}

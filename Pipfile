@@ -7,8 +7,13 @@ name = "pypi"
 django = "*"
 pillow = "*"
 django-bootstrap4 = "*"
+django-extensions = "*"
+djangorestframework = "*"
+drf-yasg = "*"
+django-filter = "*"
 
 [dev-packages]
+werkzeug = "*"
 
 [requires]
 python_version = "3.8"

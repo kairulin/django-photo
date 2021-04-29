@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% load static %}
-
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/post.css' %}"
 {% endblock %}
@@ -11,55 +10,81 @@
 {% endblock %}
 
 {% block content %}
-    <div class="d-flex bd-highlight">
-        <div class="left_width"></div>
-        {# 左邊留空白  #}
+    <div class="container-fluid">
+        <div class="row pt-4">
 
-        <div class="p-2 w-100 bd-highlight">
-            <div class="d-flex flex-column">
-                <img src="/{{ photo_path }}" class="center">
-                <p>{{ photo_title }}</p>
-                <div>
-                    <form action="" method="GET">
-                        <a href="/photo_likes/?next={{ request.path }}">
-                            <input type="button" value="喜歡:{{ photo_likes }}">
-                        </a>
-                        <a href="/photo_hates/?next={{ request.path }}">
-                            <input type="button" value="討厭:{{ photo_hates }}">
-                        </a>
-                    </form>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="/{{ main_photo.photo_file }}">
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-md-12">
+                                <span class="badge badge-default">{{ main_photo.title }}</span>
+                            </div>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-md-6">
+                                <span class="badge badge-default">Label</span>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="nav nav-pills nav-right" style="justify-content: flex-end">
+                                    <li class="nav-item">
+                                        <a class="nav-link btn btn-primary"
+                                           href="/photo_likes/?next={{ request.path }}">喜歡:<span
+                                                class="badge badge-light">{{ main_photo.photo_likes }}</span></a>
+                                    </li>
+                                    <li class="nav-item" style="margin-left: 0.5rem">
+                                        <a class="nav-link btn btn-primary"
+                                           href="/photo_hates/?next={{ request.path }}">>討厭: <span
+                                                class="badge badge-secondary">{{ main_photo.photo_hates }}</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <h5 class="card-header">
+                                Card title
+                            </h5>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    Card content
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                Card footer
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <form action="" method="GET">
-                {% csrf_token %}
-                <table>
-                    {% if username %}
-                        <textarea placeholder="使用以下身分發布留言：{{ username }}" name="content" rows="2" cols="48"></textarea>
-                    {% else %}
-                        <a href="/login/?next={{ request.path }}">
-                            <textarea readonly="readonly" placeholder="登入留言" name="content" rows="2" cols="48"></textarea>
-                        </a>
-                    {% endif %}
-                </table>
-                <input type="reset" value="取消">
-                <input name="ok" type="submit" value="留言">
-            </form>
-        </div>
-
-        <div class="right_width">
-            <div class="nav flex-column">
-                <p>其他圖片</p>
-                {% for img in photo_exclude %}
-                    <div class="next_img_padding">
-                        <a href="/post/{{ img.pk }}">
-                            <img src="/{{ img.photo_file }}" class="next_img_self_padding">
-                            {# img 是所有的 photo_exclude。 photo_file 是其他圖片 #}
-                            {{ img.title }}
+            <div class="col-md-4">
+                <span class="badge badge-default">其他圖片</span>
+                {% for photo_file in other_photo %}
+                    <div class="row">
+                        <a href="/post/{{ photo_file.pk }}">
+                            <div class="col-md-4">
+                                <img src="/{{ photo_file.photo_file }}" class="next_img_self_padding">
+                            </div>
+                            <div class="col-md-8">
+                                <span class="badge badge-default">{{ photo_file.title }}</span>
+                            </div>
                         </a>
                     </div>
                 {% endfor %}
             </div>
+
         </div>
     </div>
+
+
+
 {% endblock %}

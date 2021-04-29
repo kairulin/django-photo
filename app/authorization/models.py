@@ -3,14 +3,14 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
 
-
 # Create your models here.
 class Photo(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     title = models.CharField(max_length=20)
     photo_file = models.ImageField(upload_to='static/images/')
     build_time = models.DateTimeField(auto_now=False)
     update_time = models.DateTimeField(auto_now=True)
-    likes_hates_user = models.ManyToManyField(User)
+
     photo_likes = models.IntegerField(default=0)
     photo_hates = models.IntegerField(default=0)
 
@@ -32,7 +32,8 @@ class Photo(models.Model):
 
 class PhotoMessage(models.Model):
     photo = models.ForeignKey(Photo, on_delete=models.CASCADE)
-    message_user = models.CharField('使用者', max_length=20)
+    message_user = models.ForeignKey(User,on_delete=models.CASCADE)
+    # message_user = models.CharField('使用者', max_length=20)
     message_content = models.TextField('留言', blank=True)
     message_create_date = models.DateTimeField('留言日期', null=False, auto_now_add=True)
     message_likes = models.IntegerField(default=0)
@@ -51,3 +52,13 @@ class PhotoMessage(models.Model):
     def hates(self):
         self.message_hates += 1
         self.save(update_fields=['message_hates'])
+
+
+class PhotoLikeHate(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    photo = models.ForeignKey(Photo,on_delete=models.CASCADE,related_name="photolikehate")
+    check_button = models.BooleanField(default=False)
+    created = models.DateTimeField('評論日期', null=False, auto_now_add=True)
+
+
+

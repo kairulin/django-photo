@@ -1,20 +1,66 @@
+from django.db.models import Case, When, Value, BooleanField, Count, IntegerField, Q
+from drf_yasg.utils import swagger_auto_schema
+
 from . import models
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
-from .forms import RegisterForm, LoginForm, PhotoMessageForm
+from .forms import RegisterForm, LoginForm
 from django.contrib.auth import authenticate, login as auth_login, logout
-from django.contrib.auth.models import User
+
 import random
+
+from rest_framework.viewsets import ModelViewSet
+from .models import Photo
+from .serializers import PhotoSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+import django_filters
+
 
 
 # request = user.is_authenticated
 # Create your views here.
 
 
-def index(request):  # 首頁
-    username = user_authenticated(request)  # 判斷是否有登入
 
+class ProductFilter(django_filters.FilterSet):
+    class Meta:
+        model = Photo
+        fields = ['title']
+
+
+class PhotoViewSet(ModelViewSet):
+    """
+            測試照片
+
+
+            ### 新增多筆照片
+    """
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
+
+
+    @action(['get'], detail=True)
+    def recommend(self, request, pk=None):
+
+        # queryset = Photo.objects.exclude(pk=pk)
+        # queryset = filters.SearchFilter().filter_queryset(self.request, queryset, self)
+        # serializer = self.get_serializer(queryset, many=True)
+        queryset = self.filter_queryset(self.get_queryset()).exclude(pk=pk)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+def index(request):  # 首頁
+    # username = request.user if request.user.is_authenticated else None  # 判斷是否有登入
+    username = user_authenticated(request)  # 判斷是否有登入
     photo = models.Photo.objects.all()
     random_photo = random.sample(list(photo), k=8)  # 隨機抽圖片
     result = {
@@ -26,31 +72,50 @@ def index(request):  # 首頁
 
 
 def post(request, pk):  # 圖片頁面
+    # username = request.user if request.user.is_authenticated else None
     username = user_authenticated(request)  # 判斷是否有登入
-    all_photo = models.Photo.objects.all()  # 所有的圖片
-    wanna_photo = all_photo.get(pk=pk)  # 選擇的圖片
-    photo_exclude = list(all_photo.exclude(pk=pk))  # 除了選擇的圖片 的其他圖片
-    random.shuffle(photo_exclude)  # 其他圖片打亂位置
 
-    img = {
-        'photo_title': wanna_photo.title,  # 圖片標題
-        'photo_path': wanna_photo.photo_file,  # 圖片連結
-        'photo_likes': wanna_photo.photo_likes,  # 喜歡
-        'photo_hates': wanna_photo.photo_hates,  # 討厭
-        'photo_exclude': photo_exclude,  # 除了被選到的圖片以外的dict
-        'username': username,
+    # all_photo = models.Photo.objects.all()  # 所有的圖片
+    # photo_exclude = list(all_photo.exclude(pk=pk))  # 除了選擇的圖片 的其他圖片
+    # random.shuffle(photo_exclude)  # 其他圖片打亂位置
+    # TODO: 未來要改只查一次
+    # wanna_photo: models.Photo = models.Photo.objects.get(pk=pk)  # 選擇的圖片
+    all_photo = models.Photo.objects.annotate(
+        is_current=Case(
+            When(
+                pk=pk,
+                then=Value(True)
+            ),
+            defalut=Value(False),
+            output_field=BooleanField()
+        )
+    )
+    all_photo = list(all_photo)
+
+    all_photo_list = sorted(all_photo, key=lambda obj: 0 if obj.is_current else 1)
+    main_photo = all_photo_list[0]
+    post_photo = {
+        'main_photo': main_photo,
+        'other_photo': all_photo_list[1:],
+        'username': username
     }
 
-    if 'ok' in request.GET:
-        content = request.GET['content']
-        models.PhotoMessage.objects.create(
-            photo=wanna_photo,
-            message_user=username,
-            message_content=content
-        )
-        models.PhotoMessage.objects.update()
+    # if 'photo_likes' in request.GET:
+    #     models.PhotoLikeHate.objects.create(
+    #         photo=wanna_photo,
+    #         user=username,
+    #         check_button=True
+    #     )
+    #
+    # if 'ok' in request.GET:
+    #     content = request.GET['content']
+    #     models.PhotoMessage.objects.create(
+    #         photo=wanna_photo,
+    #         message_user=username,
+    #         message_content=content
+    #     )
 
-    return render(request, 'post.html', img)
+    return render(request, 'post.html', post_photo)
 
 
 def register(request):  # 註冊
@@ -89,7 +154,6 @@ def user_login(request):  # 登入
 
 def user_logout(request):  # 登出
     logout(request)
-    # return redirect('/')
     if 'next' in request.GET:  # 登出後回到原本頁面
         return redirect(request.GET['next'])
     else:
@@ -98,69 +162,55 @@ def user_logout(request):  # 登出
 
 def user_authenticated(request):  # 判斷使用者是否有登入
     if request.user.is_authenticated:
-        username = request.user.username
+        username = request.user
     else:
         username = None
     return username
 
 
-def click_likes(request):
-    get_list = get_photo(request)
-
-    check_user_click(get_list[0], get_list[1], get_list[2])
-
-    return redirect(request.GET['next'])
-
-
-def click_hates(request):
-    get_list = get_photo(request)
-
-    check_user_click(get_list[0], get_list[1], get_list[2])
-
-    return redirect(request.GET['next'])
-
-def get_photo(request): #得到使用者、網址PK、使用者對這張圖片的感受 並放進list裡面
-    username = user_authenticated(request)
-
-    url_str = str(request)
-    split_photo = url_str.strip('/').split('/')  # 分割網址
-    photo_pk = split_photo[4] #抓這張圖的pk
-    user_feel = split_photo[1] #使用者喜歡or不喜歡
-
-    wanna_photo = models.Photo.objects.get(pk=photo_pk)
-
-    get_list = [username, wanna_photo, user_feel]
-    return get_list
-
-
-def check_user_click(username, model, user_feel):  # 檢查這個使用者是否按過讚了
-    try:
-        if model.likes_hates_user.filter(username=username):
-            print('你已經按過了')
-        else:
-            if user_feel == 'photo_likes':
-                model.likes()
-            elif user_feel == 'photo_hates':
-                model.hates()
-            model.likes_hates_user.add(User.objects.get(username=username))
-    except Exception as e:
-        print(e)
-    return 0
+# def click_likes(request):
+#     get_list = get_photo(request)
+#
+#     check_user_click(get_list[0], get_list[1], get_list[2])
+#
+#     return redirect(request.GET['next'])
+#
+#
+# def click_hates(request):
+#     get_list = get_photo(request)
+#
+#     check_user_click(get_list[0], get_list[1], get_list[2])
+#
+#     return redirect(request.GET['next'])
+#
+# def get_photo(request): #得到使用者、網址PK、使用者對這張圖片的感受 並放進list裡面
+#     username = request.user if request.user.is_authenticated else None
+#
+#     url_str = str(request)
+#     split_photo = url_str.strip('/').split('/')  # 分割網址
+#     photo_pk = split_photo[4] #抓這張圖的pk
+#     user_feel = split_photo[1] #使用者喜歡or不喜歡
+#
+#     wanna_photo = models.Photo.objects.get(pk=photo_pk)
+#
+#     get_list = [username, wanna_photo, user_feel]
+#     return get_list
+#
+#
+# def check_user_click(username, model, user_feel):  # 檢查這個使用者是否按過讚了
+#     try:
+#         if model.likes_hates_user.filter(username=username):
+#             print('你已經按過了')
+#         else:
+#             if user_feel == 'photo_likes':
+#                 model.likes()
+#             elif user_feel == 'photo_hates':
+#                 model.hates()
+#     except Exception as e:
+#         print(e)
+#     return 0
 
 # 下面是測試用
-# def photo_message(request):  # 對圖片的留言
-#     username = user_authenticated(request)  # 判斷是否有登入
-#
-#     if request.method == 'GET':
-#         print('-' * 40)
-#         message_form = PhotoMessageForm(request.POST)
-#         message_form = message_form(initial={'message_user': 'this is test'})
-#         print(message_form)
-#         if message_form.is_valid():
-#             print('yes')
-#             message_form.save()
-#             if 'next' in request.GET:  # 留言後回到原本頁面
-#                 return redirect(request.GET['next'])
-#     else:
-#         message_form = PhotoMessageForm()
-#     return render(request, 'test.html', locals())
+def test_test(request):  # 對圖片的留言
+
+    return render(request, 'test.html', locals())
